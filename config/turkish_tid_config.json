@@ -1,0 +1,173 @@
+{
+  "name": "Turkish to Turkish Sign Language Configuration",
+  "description": "Configuration for Turkish (Türkçe) spoken language to Turkish Sign Language (Türk İşaret Dili - TİD) translation pipeline",
+  "version": "0.1.0",
+  "languages": {
+    "spoken": {
+      "code": "tr",
+      "name": "Turkish",
+      "name_native": "Türkçe",
+      "iso_639_1": "tr",
+      "iso_639_3": "tur",
+      "lemmatization_support": true,
+      "lemmatization_library": "simplemma",
+      "notes": "Turkish is an agglutinative language with rich morphology. The simple glosser uses simplemma for lemmatization."
+    },
+    "signed": {
+      "code": "tsm",
+      "name": "Turkish Sign Language",
+      "name_native": "Türk İşaret Dili",
+      "abbreviation": "TİD",
+      "iso_639_3": "tsm",
+      "glottolog_id": "turk1304",
+      "lexicon_available": false,
+      "notes": "TİD is the sign language used by the Deaf community in Turkey. Real pose data is required for translation."
+    }
+  },
+  "pipeline_support": {
+    "text_to_gloss": {
+      "status": "supported",
+      "glossers": ["simple"],
+      "notes": "Turkish text can be processed and lemmatized using the simple glosser with simplemma."
+    },
+    "gloss_to_pose": {
+      "status": "requires_lexicon",
+      "notes": "Requires a real TİD lexicon with pose files. No lexicon is included in this repository.",
+      "required_data": [
+        "TİD sign pose recordings (.pose files)",
+        "index.csv mapping Turkish words to TİD signs",
+        "Turkish fingerspelling alphabet (optional, for fallback)"
+      ]
+    },
+    "pose_to_video": {
+      "status": "requires_lexicon",
+      "notes": "Depends on gloss_to_pose. Will work once a TİD lexicon is provided."
+    }
+  },
+  "linguistic_features": {
+    "turkish_spoken": {
+      "word_order": "SOV (Subject-Object-Verb)",
+      "morphology": "agglutinative",
+      "script": "Latin alphabet with Turkish-specific characters (ç, ğ, ı, i, İ, ö, ş, ü)",
+      "special_characters": ["ç", "ğ", "ı", "İ", "ö", "ş", "ü"],
+      "challenges": [
+        "Rich morphology requires good lemmatization",
+        "Word formation through suffixation",
+        "Vowel harmony rules"
+      ]
+    },
+    "tid_signed": {
+      "modality": "visual-gestural",
+      "grammar": "TİD has its own grammatical structure distinct from Turkish",
+      "word_order": "Different from Turkish, may vary with context",
+      "classifiers": "Uses classifier constructions",
+      "space": "Uses signing space for grammatical purposes",
+      "non_manual_markers": "Facial expressions and head movements are grammatically significant",
+      "regional_variation": "May have regional dialects across Turkey"
+    }
+  },
+  "examples": {
+    "basic_greetings": [
+      {
+        "turkish": "Merhaba",
+        "gloss": "MERHABA",
+        "english": "Hello"
+      },
+      {
+        "turkish": "Nasılsın",
+        "gloss": "NASIL",
+        "english": "How are you"
+      },
+      {
+        "turkish": "Teşekkür ederim",
+        "gloss": "TEŞEKKÜR",
+        "english": "Thank you"
+      }
+    ],
+    "simple_sentences": [
+      {
+        "turkish": "Ben öğrenciyim",
+        "gloss": "BEN ÖĞRENCI",
+        "english": "I am a student"
+      },
+      {
+        "turkish": "Türk İşaret Dili öğreniyorum",
+        "gloss": "TÜRK İŞARET DİL ÖĞREN",
+        "english": "I am learning Turkish Sign Language"
+      }
+    ]
+  },
+  "resources": {
+    "documentation": "docs/TURKISH_TID_SUPPORT.md",
+    "example_code": "examples/turkish_example.py",
+    "tests": "tests/test_turkish_tid.py",
+    "external_resources": [
+      {
+        "name": "İşaret Dili - Turkish Sign Language Association",
+        "url": "https://isaret.org.tr/",
+        "description": "Turkish Sign Language resources and advocacy"
+      },
+      {
+        "name": "Boğaziçi University Sign Language Research",
+        "url": "https://www.bogazici.edu.tr/",
+        "description": "Academic research on Turkish Sign Language"
+      }
+    ]
+  },
+  "lexicon_requirements": {
+    "format": "CSV index with pose files",
+    "structure": {
+      "index_file": "index.csv",
+      "pose_directory": "tsm/",
+      "required_columns": [
+        "path",
+        "spoken_language",
+        "signed_language",
+        "start",
+        "end",
+        "segment_start",
+        "segment_end",
+        "words",
+        "glosses",
+        "priority"
+      ]
+    },
+    "data_requirements": [
+      "Native TİD signers for recordings",
+      "Proper lighting and camera setup",
+      "Pose extraction from video",
+      "Linguistic validation by TİD experts",
+      "Proper consent and licensing"
+    ],
+    "ethical_considerations": [
+      "Obtain explicit consent from signers",
+      "Respect intellectual property rights",
+      "Include proper attribution",
+      "Consider regional variations",
+      "Involve Deaf community in validation",
+      "Comply with data protection regulations (KVKK in Turkey)"
+    ]
+  },
+  "current_limitations": [
+    "No TİD lexicon included in repository",
+    "Gloss-to-pose translation not available without lexicon",
+    "No TİD-specific grammatical rules implemented",
+    "No fingerspelling alphabet for Turkish",
+    "Advanced glossers (rules, nmt) not configured for Turkish/TİD",
+    "No regional dialect support",
+    "No non-manual marker generation"
+  ],
+  "future_work": [
+    "Collaborate with Turkish Deaf community to create TİD lexicon",
+    "Implement TİD-specific grammatical rules",
+    "Add Turkish fingerspelling support",
+    "Train NMT model for Turkish to TİD gloss translation",
+    "Research and implement TİD word order rules",
+    "Add support for regional TİD variants",
+    "Integrate non-manual markers in pose generation"
+  ],
+  "contact": {
+    "note": "If you have access to TİD data or want to contribute to Turkish Sign Language support, please open an issue on GitHub.",
+    "contribution_guidelines": "See docs/TURKISH_TID_SUPPORT.md for guidelines on contributing TİD data"
+  }
+}

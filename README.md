@@ -224,6 +224,9 @@ The pipeline consists of three main components:
 | Swiss Italian Sign Language | slf       | `simple`, `spacylemma`                                                                                                                                                   | [SignSuisse (it)](https://signsuisse.sgb-fss.ch/it/) |
 | German Sign Language        | gsg       | `simple`, `spacylemma`, [`nmt`](https://github.com/ZurichNLP/spoken-to-signed-translation/tree/main/spoken_to_signed/text_to_gloss#nmt-component)                        | WordNet (Coming Soon)                                |
 | British Sign Language       | bfi       | `simple`, `spacylemma`, [`nmt`](TODO-model-link)                                                                                                                         | WordNet (Coming Soon)                                |
+| Turkish Sign Language (TİD) | tsm       | `simple` ⚠️                                                                                                                                                              | Lexicon Required (See [docs/TURKISH_TID_SUPPORT.md](docs/TURKISH_TID_SUPPORT.md)) |
+
+⚠️ **Turkish Sign Language (Türk İşaret Dili - TİD)**: Text-to-gloss works for Turkish (`tr`), but gloss-to-pose requires a real TİD lexicon (not included). See [Turkish/TİD documentation](docs/TURKISH_TID_SUPPORT.md) for details.
 
 ## Online Playgrounds
 
