@@ -6,6 +6,7 @@ These tests verify:
 2. Text-to-gloss conversion for Turkish
 3. Proper error handling when TİD lexicon data is missing
 4. Pipeline integration with Turkish language codes
+5. NO fake TİD output (no non-TİD fingerspelling fallback)
 """
 
 import subprocess
@@ -91,22 +92,28 @@ def test_turkish_text_to_gloss_cli():
 def test_turkish_tid_without_lexicon_fails_gracefully():
     """Test that the pipeline fails clearly when TİD lexicon is missing.
     
-    With fingerspelling disabled, the system must fail with a clear error
-    when TİD pose data is not available in the lexicon. This tests that:
-    1. The CLI accepts tr/tsm arguments (no argparse error)
-    2. The actual pose lookup fails (real TİD data missing)
-    3. The error message is clear and informative
+    CRITICAL: Tests that tsm does NOT silently use non-TİD fingerspelling.
+    
+    Tests TWO scenarios:
+    1. DEFAULT (no flags): Must fail because no verified TİD fingerspelling exists
+    2. EXPLICIT --disable-fingerspelling: Must also fail (redundant check)
+    
+    Both must:
+    - Accept tr/tsm CLI arguments (no argparse error)
+    - Fail at pose lookup (real TİD lexicon missing)
+    - NOT create output pose file (no fake TİD)
+    - Return clear error message
     """
     with tempfile.TemporaryDirectory() as tmp_dir:
-        pose_path = Path(tmp_dir) / "output.pose"
-
-        # Try to use the dummy lexicon which doesn't have Turkish/TİD data
-        # Disable fingerspelling to force lookup failure
-        result = subprocess.run(
+        # SCENARIO 1: Default behavior - NO flags
+        # This is CRITICAL: tsm should fail even without --disable-fingerspelling
+        # because we don't have verified TİD fingerspelling alphabet
+        pose_path_default = Path(tmp_dir) / "output_default.pose"
+        result_default = subprocess.run(
             [
                 "text_to_gloss_to_pose",
                 "--text",
-                "Merhaba dünya",
+                "Merhaba",  # Turkish word not in dummy_lexicon
                 "--glosser",
                 "simple",
                 "--lexicon",
@@ -116,27 +123,68 @@ def test_turkish_tid_without_lexicon_fails_gracefully():
                 "--signed-language",
                 "tsm",
                 "--pose",
-                str(pose_path),
-                "--disable-fingerspelling",  # Force lexicon lookup, no fallback
+                str(pose_path_default),
+                # NO --disable-fingerspelling - testing default behavior
             ],
             capture_output=True,
             text=True,
             timeout=10,
         )
 
-        # Should fail because dummy lexicon doesn't have Turkish/TİD data
-        # The system should fail gracefully, not silently produce wrong output
-        assert result.returncode != 0, "Should fail without TİD lexicon data when fingerspelling is disabled"
-
-        # The error should be informative about missing poses
-        error_output = result.stderr.lower()
-        # We expect "No poses found" error from pose lookup
-        assert (
-            "no poses found" in error_output or "exception" in error_output
-        ), f"Error should indicate missing TİD poses in lexicon: {result.stderr}"
+        # Must fail for tsm (no verified TİD alphabet)
+        assert result_default.returncode != 0, (
+            "DEFAULT: Should fail for tsm without TİD lexicon. "
+            "Must NOT silently use non-TİD fingerspelling."
+        )
         
-        # Should NOT be an argparse error (tr/tsm should be accepted)
-        assert "invalid choice" not in error_output, f"Should not be argparse error, tr/tsm must be accepted: {result.stderr}"
+        # Must NOT create fake TİD pose file
+        assert not pose_path_default.exists(), (
+            "DEFAULT: Should NOT create pose file when TİD data is missing. "
+            "Creating a pose would be fake TİD output."
+        )
+        
+        # Check error details
+        error_default = result_default.stderr.lower()
+        assert "no poses found" in error_default or "exception" in error_default, (
+            f"DEFAULT: Should have clear pose lookup error. Got: {result_default.stderr}"
+        )
+        assert "invalid choice" not in error_default, (
+            "DEFAULT: Should not be argparse error (tr/tsm must be accepted)"
+        )
+
+        # SCENARIO 2: Explicit --disable-fingerspelling (redundant but thorough)
+        pose_path_explicit = Path(tmp_dir) / "output_explicit.pose"
+        result_explicit = subprocess.run(
+            [
+                "text_to_gloss_to_pose",
+                "--text",
+                "Merhaba",
+                "--glosser",
+                "simple",
+                "--lexicon",
+                "assets/dummy_lexicon",
+                "--spoken-language",
+                "tr",
+                "--signed-language",
+                "tsm",
+                "--pose",
+                str(pose_path_explicit),
+                "--disable-fingerspelling",  # Explicit disable
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+
+        # Must also fail with explicit disable
+        assert result_explicit.returncode != 0, "EXPLICIT: Should fail with --disable-fingerspelling"
+        assert not pose_path_explicit.exists(), "EXPLICIT: Should NOT create pose file"
+        
+        error_explicit = result_explicit.stderr.lower()
+        assert "no poses found" in error_explicit or "exception" in error_explicit, (
+            f"EXPLICIT: Should have pose lookup error. Got: {result_explicit.stderr}"
+        )
+        assert "invalid choice" not in error_explicit, "EXPLICIT: Should not be argparse error"
 
 
 def test_turkish_language_code_accepted():

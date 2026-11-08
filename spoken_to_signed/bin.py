@@ -33,7 +33,16 @@ def _gloss_to_pose(
     signed_language: str,
     disable_fingerspelling: bool = False,
 ) -> tuple[PoseResult, list[list[TokenCoverage]]]:
-    backup = None if disable_fingerspelling else FingerspellingPoseLookup()
+    # Disable fingerspelling backup for signed languages without verified native alphabet
+    # tsm (Turkish Sign Language): fingerspelling data source/authenticity not verified
+    # Using non-native fingerspelling would produce fake TİD output
+    signed_languages_without_verified_fingerspelling = {"tsm"}
+    
+    if signed_language in signed_languages_without_verified_fingerspelling:
+        backup = None  # No fingerspelling fallback for unverified languages
+    else:
+        backup = None if disable_fingerspelling else FingerspellingPoseLookup()
+    
     pose_lookup = CSVPoseLookup(lexicon, backup=backup)
     results = []
     coverage = []
