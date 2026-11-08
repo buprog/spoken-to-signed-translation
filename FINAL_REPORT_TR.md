@@ -553,16 +553,16 @@ TARGET (Signed):     TİD (tsm)
 
 ## 🎊 Sonuç
 
-**Türkçe/TİD altyapısı başarıyla eklendi ve test edildi!**
+**Türkçe text-to-gloss altyapısı eklendi ve test edildi.**
 
 ✅ **Branch:** cursor/add-turkish-tid-infrastructure-8e63  
-✅ **Commit:** e4b6135a (ana) + b1915da (kurulum)  
 ✅ **Push Durumu:** GitHub'da mevcut  
-✅ **Test Durumu:** 13/13 başarılı  
-✅ **Dokümantasyon:** Eksiksiz  
-✅ **Dürüstlük:** Sahte veri yok, sınırlamalar net  
+✅ **Text-to-Gloss:** Çalışıyor (Türkçe lemmatizasyon)  
+✅ **Test Durumu:** 13/13 başarılı + 5/5 regresyon  
+✅ **Hata Yönetimi:** TİD sözlük eksikliği düzgün bildiriliyor  
+✅ **Dokümantasyon:** Sınırlamalar açıkça belirtildi  
 
-**Proje istenen tüm gereksinimleri karşılıyor. 🚀**
+**Önemli:** Bu sadece Türkçe metin işleme altyapısıdır. Gerçek TİD işaret çevirisi için TİD sözlüğü (pose verileri) gereklidir (dahil değil).
 
 ---
 

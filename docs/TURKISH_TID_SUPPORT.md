@@ -12,13 +12,14 @@ This document describes the Turkish language infrastructure added to the spoken-
 
 ### Current Implementation Status
 
-#### ✅ Fully Implemented
+#### ✅ Working Now (Text Processing Only)
 
 1. **Turkish Text Processing**: Turkish language support via `simplemma` library for tokenization and lemmatization
-2. **Pipeline Integration**: Turkish (`tr`) is now recognized as a valid spoken language throughout the system
+2. **Pipeline Integration**: Turkish (`tr`) is accepted as a spoken language in CLI and code
 3. **Sign Language Configuration**: Turkish Sign Language (`tsm`) is configured in the language system
-4. **Text-to-Gloss Pipeline**: Turkish text can be processed through the `simple` glosser
-5. **Testing Infrastructure**: Turkish-specific test cases for text processing
+4. **Text-to-Gloss Pipeline**: Turkish text can be processed through the `simple` glosser (lemmatization only, not TİD grammar)
+5. **Testing Infrastructure**: Turkish-specific test cases for text processing (13 tests)
+6. **Error Handling**: Clear errors when TİD lexicon data is missing
 
 #### ⚠️ Requires Real TİD Data (Not Yet Available)
 
@@ -162,13 +163,14 @@ Bu belge, Türk İşaret Dili (TİD) için konuşulan dilden işaret diline çev
 
 ### Mevcut Uygulama Durumu
 
-#### ✅ Tamamen Uygulandı
+#### ✅ Şu An Çalışan (Sadece Metin İşleme)
 
 1. **Türkçe Metin İşleme**: `simplemma` kütüphanesi ile Türkçe dil desteği (tokenizasyon ve lemmatizasyon)
-2. **Hattı Entegrasyonu**: Türkçe (`tr`) artık sistemde geçerli bir konuşulan dil olarak tanınıyor
+2. **Hattı Entegrasyonu**: Türkçe (`tr`) CLI ve kodda konuşulan dil olarak kabul ediliyor
 3. **İşaret Dili Yapılandırması**: Türk İşaret Dili (`tsm`) dil sisteminde yapılandırıldı
-4. **Metin-Gloss Hattı**: Türkçe metin `simple` glosser ile işlenebilir
-5. **Test Altyapısı**: Türkçe'ye özel metin işleme test senaryoları
+4. **Metin-Gloss Hattı**: Türkçe metin `simple` glosser ile işlenebilir (sadece lemmatizasyon, TİD grameri değil)
+5. **Test Altyapısı**: Türkçe'ye özel metin işleme test senaryoları (13 test)
+6. **Hata Yönetimi**: TİD sözlük verisi eksik olduğunda net hatalar
 
 #### ⚠️ Gerçek TİD Verisi Gerektirir (Henüz Mevcut Değil)
 

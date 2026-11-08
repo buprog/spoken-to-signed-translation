@@ -89,11 +89,19 @@ def test_turkish_text_to_gloss_cli():
 
 
 def test_turkish_tid_without_lexicon_fails_gracefully():
-    """Test that the pipeline fails clearly when TİD lexicon is missing."""
+    """Test that the pipeline fails clearly when TİD lexicon is missing.
+    
+    With fingerspelling disabled, the system must fail with a clear error
+    when TİD pose data is not available in the lexicon. This tests that:
+    1. The CLI accepts tr/tsm arguments (no argparse error)
+    2. The actual pose lookup fails (real TİD data missing)
+    3. The error message is clear and informative
+    """
     with tempfile.TemporaryDirectory() as tmp_dir:
         pose_path = Path(tmp_dir) / "output.pose"
 
         # Try to use the dummy lexicon which doesn't have Turkish/TİD data
+        # Disable fingerspelling to force lookup failure
         result = subprocess.run(
             [
                 "text_to_gloss_to_pose",
@@ -109,6 +117,7 @@ def test_turkish_tid_without_lexicon_fails_gracefully():
                 "tsm",
                 "--pose",
                 str(pose_path),
+                "--disable-fingerspelling",  # Force lexicon lookup, no fallback
             ],
             capture_output=True,
             text=True,
@@ -117,15 +126,17 @@ def test_turkish_tid_without_lexicon_fails_gracefully():
 
         # Should fail because dummy lexicon doesn't have Turkish/TİD data
         # The system should fail gracefully, not silently produce wrong output
-        assert result.returncode != 0, "Should fail without TİD lexicon data"
+        assert result.returncode != 0, "Should fail without TİD lexicon data when fingerspelling is disabled"
 
-        # The error should be informative
+        # The error should be informative about missing poses
         error_output = result.stderr.lower()
-        # Either lexicon doesn't have Turkish, or pose lookup fails
-        # We expect some kind of lookup/lexicon error
+        # We expect "No poses found" error from pose lookup
         assert (
-            "tr" in error_output or "tsm" in error_output or "lexicon" in error_output or "lookup" in error_output
-        ), f"Error should mention missing language or lexicon support: {result.stderr}"
+            "no poses found" in error_output or "exception" in error_output
+        ), f"Error should indicate missing TİD poses in lexicon: {result.stderr}"
+        
+        # Should NOT be an argparse error (tr/tsm should be accepted)
+        assert "invalid choice" not in error_output, f"Should not be argparse error, tr/tsm must be accepted: {result.stderr}"
 
 
 def test_turkish_language_code_accepted():

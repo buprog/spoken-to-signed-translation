@@ -108,13 +108,24 @@ def _text_input_arguments(parser: argparse.ArgumentParser):
     pre_parser.add_argument("--lexicon", type=str)
     pre_args, _ = pre_parser.parse_known_args()
 
+    # Base languages that always work (text-to-gloss without lexicon)
+    base_spoken_languages = ["de", "fr", "it", "en", "tr"]
+    base_signed_languages = ["sgg", "gsg", "bfi", "ase", "tsm"]
+
     if pre_args.lexicon:
+        # If lexicon is provided, include both lexicon languages AND base languages
+        # This allows text-to-gloss to work for any supported language,
+        # even if the lexicon doesn't have poses for it (will fail at pose lookup, not argparse)
         lookup = CSVPoseLookup(pre_args.lexicon)
-        spoken_languages = list(lookup.words_index.keys())
-        signed_languages = set(chain.from_iterable(lookup.words_index[lang].keys() for lang in spoken_languages))
+        lexicon_spoken = list(lookup.words_index.keys())
+        lexicon_signed = set(chain.from_iterable(lookup.words_index[lang].keys() for lang in lexicon_spoken))
+        
+        # Union of lexicon languages and base languages
+        spoken_languages = sorted(set(base_spoken_languages) | set(lexicon_spoken))
+        signed_languages = sorted(set(base_signed_languages) | lexicon_signed)
     else:
-        spoken_languages = ["de", "fr", "it", "en", "tr"]
-        signed_languages = ["sgg", "gsg", "bfi", "ase", "tsm"]
+        spoken_languages = base_spoken_languages
+        signed_languages = base_signed_languages
 
     parser.add_argument("--spoken-language", choices=spoken_languages, required=True)
     parser.add_argument("--signed-language", choices=signed_languages, required=True)
