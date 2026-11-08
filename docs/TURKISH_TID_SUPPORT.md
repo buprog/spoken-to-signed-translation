@@ -31,8 +31,9 @@ The following components **require authentic Turkish Sign Language lexicon data*
    - Linguistic validation by TİD experts is required
 
 2. **Gloss-to-Pose Conversion**: Cannot convert glosses to TİD poses without lexicon
-   - The system will fail gracefully with a clear error message
-   - Fingerspelling fallback requires Turkish fingerspelling alphabet poses
+   - The system will fail gracefully with a clear error message: "No poses found"
+   - No output pose file is created (no fake TİD)
+   - Fingerspelling fallback is DISABLED for tsm (no verified TİD alphabet available)
 
 3. **Advanced Glossers**: The `rules`, `nmt`, and `spacylemma` glossers may need TİD-specific linguistic rules
 
